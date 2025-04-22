@@ -28,6 +28,12 @@ vim.keymap.set("v", ">", ">gv")
 vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("n", "n", "nzz")
 vim.keymap.set("n", "N", "Nzz")
+vim.keymap.set("n", "<leader>co", ":copen<CR>", { silent = true, desc = "Open Quickfix" })
+vim.keymap.set("t", "<Esc>", "<C-\\><C-n>:q<CR>", { silent = true, desc = "Close Terminal" })
+vim.keymap.set("n", "<C-h>", "<C-w>h",{desc = "Move window"})
+vim.keymap.set("n", "<C-j>", "<C-w>j",{desc = "Move window"})
+vim.keymap.set("n", "<C-k>", "<C-w>k",{desc = "Move window"})
+vim.keymap.set("n", "<C-l>", "<C-w>l",{desc = "Move window"})
 --vim.keymap.set({"n","v"},"<C-j>", "5j", { noremap = true, silent = true })
 --vim.keymap.set({"n","v"},"<C-k>", "5k", { noremap = true, silent = true })
 -- Key mappings --
@@ -59,7 +65,7 @@ if not vim.loop.fs_stat(lazypath) then
       event = "BufReadPost",
       config = function()
       require("nvim-treesitter.configs").setup({
-        ensure_installed = { "cpp", "c" },
+        ensure_installed = { "cpp", "c", "lua" },
         highlight = { enable = true },
       })
       end,
@@ -79,6 +85,10 @@ if not vim.loop.fs_stat(lazypath) then
         filetypes = { "c", "cpp", "objc", "objcpp" },
         root_dir = lspconfig.util.root_pattern("compile_commands.json", ".clangd", ".git"),
       })
+      lspconfig.lua_ls.setup({
+				capabilities = require("blink-cmp").get_lsp_capabilities(),
+        filetypes = { "lua" },
+			})
       local nmap = function(keys, func, desc)
       	if desc then
           desc = 'LSP: ' .. desc
@@ -179,7 +189,7 @@ if not vim.loop.fs_stat(lazypath) then
     },
   },
   -- 由于“opts_extend”，您的配置中的其他位置无需重新定义它
- opts_extend = { "sources.default" }
+  opts_extend = { "sources.default" }
     },
 
     -- 4. 文件浏览器：nvim-tree
@@ -229,8 +239,6 @@ if not vim.loop.fs_stat(lazypath) then
       vim.keymap.set("n", "<leader>cd", ":AsyncRun g++ % -o %:r -g<CR>", { desc = "Compile with Debug" })
       vim.keymap.set("n", "<leader>cs", ":AsyncStop<CR>", { silent = true, desc = "Stop AsyncRun" })
       vim.keymap.set("n", "<leader>cc", ":AsyncRun g++ % -o %:r && ./%:r<CR>", { silent = true, desc = "Compile and Run C++" })
-      vim.keymap.set("n", "<leader>co", ":copen<CR>", { silent = true, desc = "Open Quickfix" })
-      vim.keymap.set("t", "<Esc>", "<C-\\><C-n>:q<CR>", { silent = true, desc = "Close Terminal" })
       end,
     },
 
