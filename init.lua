@@ -9,17 +9,20 @@ vim.o.cursorline = true
 -- 设置 leader 键
 vim.g.mapleader = " "
 vim.g.maplocalleadher = " "
+--相对行号
+vim.o.relativenumber=true
+vim.o.scrolloff = 8
+vim.o.sidescrolloff = 8
 
 -- $跳到行尾不带空格 (交换$ 和 g_)
 vim.keymap.set({ "v", "n" }, "$", "g_")
 vim.keymap.set({ "v", "n" }, "g_", "$")
--- fix :set wrap
 --vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 --vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 
+vim.keymap.set({'n','t'}, '<A-d>', '<cmd>Lspsaga term_toggle<CR>')
 vim.keymap.set("n", "<leader><CR>", "<CMD>noh<CR>", { desc = "Clear Highlights" })
 vim.keymap.set("i", "<esc>", "<esc><CMD>noh<CR>", { desc = "Clear Highlights" })
-vim.keymap.set('i', 'jj', '<esc>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>q', '<cmd>q<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>w', '<cmd>w<CR>', { noremap = true, silent = true })
 vim.keymap.set("v", "J", ":move '>+1<CR>gv-gv", { desc = "Move Text Down" })
@@ -28,21 +31,19 @@ vim.keymap.set("v", ">", ">gv")
 vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("n", "n", "nzz")
 vim.keymap.set("n", "N", "Nzz")
-vim.keymap.set("n", "<leader>co", ":copen<CR>", { silent = true, desc = "Open Quickfix" })
-vim.keymap.set("t", "<Esc>", "<C-\\><C-n>:q<CR>", { silent = true, desc = "Close Terminal" })
+vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { silent = true, desc = "Close Terminal" })
 vim.keymap.set("n", "<C-h>", "<C-w>h",{desc = "Move window"})
 vim.keymap.set("n", "<C-j>", "<C-w>j",{desc = "Move window"})
 vim.keymap.set("n", "<C-k>", "<C-w>k",{desc = "Move window"})
 vim.keymap.set("n", "<C-l>", "<C-w>l",{desc = "Move window"})
 --vim.keymap.set({"n","v"},"<C-j>", "5j", { noremap = true, silent = true })
 --vim.keymap.set({"n","v"},"<C-k>", "5k", { noremap = true, silent = true })
--- Key mappings --
 vim.keymap.set({ "n", "i", "v" }, "<Left>", "<Nop>")
 vim.keymap.set({ "n", "i", "v" }, "<Right>", "<Nop>")
 vim.keymap.set({ "n", "i", "v" }, "<Up>", "<Nop>")
 vim.keymap.set({ "n", "i", "v" }, "<Down>", "<Nop>")
 vim.o.mouse = ""
--- 初始化 lazy.nvim
+-- lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/site/pack/lazy/start/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -53,31 +54,31 @@ if not vim.loop.fs_stat(lazypath) then
     "--branch=stable",
     lazypath,
   })
-  end
-  vim.opt.rtp:prepend(lazypath)
+end
+vim.opt.rtp:prepend(lazypath)
 
-  -- 配置插件
-  require("lazy").setup({
-    -- 1. 语法高亮：nvim-treesitter
-    {
-      "nvim-treesitter/nvim-treesitter",
-      build = ":TSUpdate",
-      event = "BufReadPost",
-      config = function()
+-- 插件
+require("lazy").setup({
+  -- 1. nvim-treesitter
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    event = "BufReadPost",
+    config = function()
       require("nvim-treesitter.configs").setup({
         ensure_installed = { "cpp", "c", "lua" },
         highlight = { enable = true },
       })
-      end,
-    },
+    end,
+  },
 
-    -- 2. LSP 支持：nvim-lspconfig + clangd
-    {
-      "neovim/nvim-lspconfig",
-      ft = { "cpp", "c", "lua" },
-      rependencies = { "saghen/blink.cmp" },
-      dependencies = { "nvimdev/lspsaga.nvim" },
-      config = function()
+  -- 2. LSP :nvim-lspconfig + clangd
+  {
+    "neovim/nvim-lspconfig",
+    ft = { "cpp", "c", "lua" },
+    rependencies = { "saghen/blink.cmp" },
+    dependencies = { "nvimdev/lspsaga.nvim" },
+    config = function()
       local lspconfig = require("lspconfig")
       lspconfig.clangd.setup({
         capabilities = require("blink.cmp").get_lsp_capabilities(),
@@ -86,11 +87,11 @@ if not vim.loop.fs_stat(lazypath) then
         root_dir = lspconfig.util.root_pattern("compile_commands.json", ".clangd", ".git"),
       })
       lspconfig.lua_ls.setup({
-				capabilities = require("blink-cmp").get_lsp_capabilities(),
+        capabilities = require("blink-cmp").get_lsp_capabilities(),
         filetypes = { "lua" },
-			})
+      })
       local nmap = function(keys, func, desc)
-      	if desc then
+        if desc then
           desc = 'LSP: ' .. desc
         end
 
@@ -101,175 +102,193 @@ if not vim.loop.fs_stat(lazypath) then
       vim.api.nvim_set_keymap("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", { noremap = true, silent = true })
       vim.api.nvim_set_keymap("n", "<leader>lr", "<cmd>lua vim.lsp.buf.references()<CR>", { noremap = true, silent = true })
       nmap('K', "<cmd>Lspsaga hover_doc<CR>", 'Hover Documentation')
+      nmap('<leader>pd', "<cmd>Lspsaga peek_definition<CR>", '[P]eek [D]efinition')
       nmap('<leader>rn', "<cmd>Lspsaga rename<cr>", '[R]e[n]ame')
       nmap('<leader>ca', "<cmd>Lspsaga code_action<CR>", '[C]ode [A]ction')
       nmap('<leader>lf', "<cmd>Lspsaga finder<CR>", '[L]sp [F]inder')
       nmap(']e', "<cmd>Lspsaga diagnostic_jump_next<CR>", 'jump [N]ext')
       nmap('[e', "<cmd>Lspsaga diagnostic_jump_prev<CR>", 'jump [P]review')
-      end,
-    },
+      vim.keymap.set("n", "[E", function()
+        require("lspsaga.diagnostic"):goto_prev({ severity = vim.diagnostic.severity.ERROR })
+      end)
+      vim.keymap.set("n", "]E", function()
+        require("lspsaga.diagnostic"):goto_next({ severity = vim.diagnostic.severity.ERROR })
+      end)
 
-    -- 3. 自动补全：blink-cmp
-    {
-      'saghen/blink.cmp',
-      dependencies = 'rafamadriz/friendly-snippets',
-      version = '*',
-      build = "cargo build --release",
-      ---@module 'blink.cmp'
-      ---@type blink.cmp.Config
-      opts = {
-        cmdline = {
-          completion = {
-            menu = {
-              auto_show = true,
-            }
-          },
-          keymap = {
-            preset = "none",
-            ["<Tab>"] = {"accept"},
-            ["<C-k>"] = { "select_prev", "fallback" },
-            ["<C-j>"] = { "select_next", "fallback" },
+    end,
+  },
+
+  -- 3. blink-cmp
+  {
+    'saghen/blink.cmp',
+    dependencies = 'rafamadriz/friendly-snippets',
+    version = '*',
+    build = "cargo build --release",
+    ---@module 'blink.cmp'
+    ---@type blink.cmp.Config
+    opts = {
+      cmdline = {
+        completion = {
+          menu = {
+            auto_show = true,
           }
         },
         keymap = {
-          preset = 'none',
-          ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
-          -- ['<C-e>'] = { 'hide' },
-          -- fallback命令将运行下一个非闪烁键盘映射(回车键的默认换行等操作需要)
-          ['<C-e>'] = { 'hide' },
-          ['<CR>'] = { 'accept', 'fallback' }, -- 更改成'select_and_accept'会选择第一项插入
-          ['<C-p>'] = { 'select_prev', 'snippet_backward', 'fallback' },
-          ['<C-n>'] = { 'select_next', 'snippet_forward', 'fallback' }, -- 同时存在补全列表和snippet时，补全列表选择优先级更高
+          preset = "none",
+          ["<Tab>"] = {"accept"},
+          ["<C-k>"] = { "select_prev", "fallback" },
+          ["<C-j>"] = { "select_next", "fallback" },
+        }
+      },
+      keymap = {
+        preset = 'none',
+        ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
+        -- ['<C-e>'] = { 'hide' },
+        -- fallback命令将运行下一个非闪烁键盘映射(回车键的默认换行等操作需要)
+        ['<C-e>'] = { 'hide' },
+        ['<CR>'] = { 'accept', 'fallback' }, -- 更改成'select_and_accept'会选择第一项插入
+        ['<C-p>'] = { 'select_prev', 'snippet_backward', 'fallback' },
+        ['<C-n>'] = { 'select_next', 'snippet_forward', 'fallback' }, -- 同时存在补全列表和snippet时，补全列表选择优先级更高
 
-          ['<C-b>'] = { 'scroll_documentation_up', 'fallback' },
-          ['<C-f>'] = { 'scroll_documentation_down', 'fallback' },
+        ['<C-b>'] = { 'scroll_documentation_up', 'fallback' },
+        ['<C-f>'] = { 'scroll_documentation_down', 'fallback' },
 
-          ['<Tab>'] = { 'snippet_forward', 'select_next', 'fallback' }, -- 同时存在补全列表和snippet时，snippet跳转优先级更高
-          ['<S-Tab>'] = { 'snippet_backward', 'select_prev', 'fallback' },
+        ['<Tab>'] = { 'snippet_forward', 'select_next', 'fallback' }, -- 同时存在补全列表和snippet时，snippet跳转优先级更高
+        ['<S-Tab>'] = { 'snippet_backward', 'select_prev', 'fallback' },
 
-        },
-        completion = {
-          -- 示例：使用'prefix'对于'foo_|_bar'单词将匹配'foo_'(光标前面的部分),使用'full'将匹配'foo__bar'(整个单词)
-          keyword = { range = 'full' },
-          -- 选择补全项目时显示文档(0.5秒延迟)
-          documentation = { auto_show = true, auto_show_delay_ms = 500 },
-          -- 不预选第一个项目，选中后自动插入该项目文本
-          list = { selection = { preselect = false, auto_insert = true } },
+      },
+      completion = {
+        -- 示例：使用'prefix'对于'foo_|_bar'单词将匹配'foo_'(光标前面的部分),使用'full'将匹配'foo__bar'(整个单词)
+        keyword = { range = 'full' },
+        -- 选择补全项目时显示文档(0.5秒延迟)
+        documentation = { auto_show = true, auto_show_delay_ms = 500 },
+        -- 不预选第一个项目，选中后自动插入该项目文本
+        list = { selection = { preselect = false, auto_insert = true } },
       },
       -- 指定文件类型启用/禁用
       enabled = function()
-      return not vim.tbl_contains({
-      -- "lua",
-      -- "markdown"
-      }, vim.bo.filetype)
-      and vim.bo.buftype ~= "prompt"
-      and vim.b.completion ~= false
-    end,
+        return not vim.tbl_contains({
+          -- "lua",
+          -- "markdown"
+        }, vim.bo.filetype)
+        and vim.bo.buftype ~= "prompt"
+        and vim.b.completion ~= false
+      end,
 
-    appearance = {
-      -- 将后备高亮组设置为 nvim-cmp 的高亮组
-      -- 当您的主题不支持blink.cmp 时很有用
-      -- 将在未来版本中删除
-      use_nvim_cmp_as_default = true,
-      -- 将“Nerd Font Mono”设置为“mono”，将“Nerd Font”设置为“normal”
-      -- 调整间距以确保图标对齐
-      nerd_font_variant = 'mono'
-    },
+      appearance = {
+        -- 将后备高亮组设置为 nvim-cmp 的高亮组
+        -- 当您的主题不支持blink.cmp 时很有用
+        -- 将在未来版本中删除
+        use_nvim_cmp_as_default = true,
+        -- 将“Nerd Font Mono”设置为“mono”，将“Nerd Font”设置为“normal”
+        -- 调整间距以确保图标对齐
+        nerd_font_variant = 'mono'
+      },
 
-    -- 已定义启用的提供程序的默认列表，以便您可以扩展它
-    sources = {
-      default = { 'buffer', 'lsp', 'path', 'snippets', },
-      providers = {
-        -- score_offset设置优先级数字越大优先级越高
-        buffer = { score_offset = 4 },
-        path = { score_offset = 3 },
-        lsp = { score_offset = 3 },
-        snippets = { score_offset = 1 },
-      }
+      -- 已定义启用的提供程序的默认列表，以便您可以扩展它
+      sources = {
+        default = { 'buffer', 'lsp', 'path', 'snippets', },
+        providers = {
+          -- score_offset设置优先级数字越大优先级越高
+          buffer = { score_offset = 4 },
+          path = { score_offset = 3 },
+          lsp = { score_offset = 3 },
+          snippets = { score_offset = 1 },
+        }
+      },
     },
+    -- 由于“opts_extend”，您的配置中的其他位置无需重新定义它
+    opts_extend = { "sources.default" }
   },
-  -- 由于“opts_extend”，您的配置中的其他位置无需重新定义它
-  opts_extend = { "sources.default" }
-    },
 
-    -- 4. 文件浏览器：nvim-tree
-    {
-      "nvim-tree/nvim-tree.lua",
-      dependencies = { "nvim-tree/nvim-web-devicons" },
-      keys = { "<C-n>" },
-      config = function()
+  -- 4. 文件浏览器：nvim-tree
+  {
+    "nvim-tree/nvim-tree.lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    keys = { "<C-n>" },
+    config = function()
       require("nvim-tree").setup()
       vim.api.nvim_set_keymap("n", "<C-n>", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
-      end,
-    },
+    end,
+  },
 
-    -- 5. 状态栏：lualine
-    {
-      "nvim-lualine/lualine.nvim",
-      event = "VimEnter",
-      dependencies = { "nvim-tree/nvim-web-devicons" },
-      config = function()
+  -- 5. 状态栏：lualine
+  {
+    "nvim-lualine/lualine.nvim",
+    event = "VimEnter",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
       require("lualine").setup({
         options = { theme = "auto" },
       })
-      end,
-    },
+    end,
+  },
 
-    -- 6. 主题：catppuccin
-    {
-      "catppuccin/nvim",
-      name = "catppuccin",
-      lazy = false,
-      priority = 1000,
-      config = function()
+  -- 6.catppuccin
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    lazy = false,
+    priority = 1000,
+    config = function()
       require("catppuccin").setup({
         flavour = "mocha",
       })
       vim.cmd.colorscheme("catppuccin")
-      end,
-    },
+    end,
+  },
 
-    -- 7. 异步运行：asyncrun.vim
-    {
-      "skywind3000/asyncrun.vim",
-      keys = { "<leader>cc", "<leader>ct", "<leader>co", "<leader>cs" ,"<leader>cd"},
-      config = function()
-      vim.g.asyncrun_open = 7 -- 自动打开 Quickfix，高度 6 行
-      vim.keymap.set("n", "<leader>ct", ":AsyncRun -mode=term -pos=bottom g++ % -o %:r && ./%:r<CR>", { desc = "Compile and Run (Terminal)" })
-      vim.keymap.set("n", "<leader>cd", ":AsyncRun g++ % -o %:r -g<CR>", { desc = "Compile with Debug" })
+  -- 7. 异步运行：asyncrun.vim
+  {
+    "skywind3000/asyncrun.vim",
+    event = 'VeryLazy',
+    config = function()
+      vim.g.asyncrun_open = 7 -- 自动打开 Quickfix，高度 7 行
+      vim.keymap.set("n", "<leader>rt", ":AsyncRun -mode=term -pos=tab g++ % -o %:r && ./%:r<CR>", { desc = "Compile and Run (Terminal)" })
+      vim.keymap.set("n", "<F7>", ":AsyncRun g++ % -o %:r -g<CR>", { desc = "Compile with Debug" })
       vim.keymap.set("n", "<leader>cs", ":AsyncStop<CR>", { silent = true, desc = "Stop AsyncRun" })
       vim.keymap.set("n", "<leader>cc", ":AsyncRun g++ % -o %:r && ./%:r<CR>", { silent = true, desc = "Compile and Run C++" })
-      end,
-    },
+    end,
+  },
 
-    -- 8. 模糊搜索：telescope.nvim
-    {
-      "nvim-telescope/telescope.nvim",
-      branch = "0.1.x",
-      dependencies = { "nvim-lua/plenary.nvim" },
-      keys = {
-        { "<leader>ff", ":Telescope find_files<CR>", desc = "Find Files" },
-        { "<leader>fg", ":Telescope live_grep<CR>", desc = "Live Grep" },
-        { "<leader>fb", ":Telescope buffers<CR>", desc = "Buffers" },
-        { "<leader>cr", function()
-          require("telescope.builtin").find_files({
-            prompt_title = "Compile and Run C++ File",
-            attach_mappings = function(_, map)
+  -- 8. 模糊搜索：telescope.nvim
+  {
+    "nvim-telescope/telescope.nvim",
+    branch = "0.1.x",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      {
+        "nvim-telescope/telescope-fzf-native.nvim",
+        build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && "
+        .. "cmake --build build --config Release && "
+        .. "cmake --install build --prefix build",
+      },
+    },
+    keys = {
+      { "<leader>ff", ":Telescope find_files<CR>", desc = "Find Files" },
+      { "<leader>fr", ":Telescope registers<CR>", desc = "Find Registers" },
+      { "<leader>fg", ":Telescope live_grep<CR>", desc = "Live Grep" },
+      { "<leader>fb", ":Telescope buffers<CR>", desc = "Buffers" },
+      { "<leader>fq", ":Telescope quickfixhistory<CR>", desc = "Quickfix" },
+      { "<leader>cr", function()
+        require("telescope.builtin").find_files({
+          prompt_title = "Compile and Run C++ File",
+          attach_mappings = function(_, map)
             map("i", "<CR>", function(prompt_bufnr)
-            local selection = require("telescope.actions.state").get_selected_entry()
-            require("telescope.actions").close(prompt_bufnr)
-            local cmd = string.format("g++ %s -o %s && ./%s",
-                                      selection.path,
-                                      vim.fn.fnamemodify(selection.path, ":r"),
-                                      vim.fn.fnamemodify(selection.path, ":r"))
-            vim.cmd("AsyncRun " .. cmd)
+              local selection = require("telescope.actions.state").get_selected_entry()
+              require("telescope.actions").close(prompt_bufnr)
+              local cmd = string.format("g++ %s -o %s && ./%s",
+              selection.path,
+              vim.fn.fnamemodify(selection.path, ":r"),
+              vim.fn.fnamemodify(selection.path, ":r"))
+              vim.cmd("AsyncRun " .. cmd)
             end)
             return true
           end,
         })
-        end, desc = "Compile and Run C++" },
-      },
-      config = function()
+      end, desc = "Compile and Run C++" },
+    },
+    config = function()
       local actions = require "telescope.actions"
       require("telescope").setup({
         defaults = {
@@ -285,20 +304,28 @@ if not vim.loop.fs_stat(lazypath) then
             }
           }
         },
+        extensions = {
+          fzf = {
+            fuzzy = true,
+            override_generic_sorter = true,
+            override_file_sorter = true,
+            case_mode = "smart_case",
+          },
+        },
       })
-      end,
-    },
+    end,
+  },
 
-    -- 9. nvim-dap
-    {
-      "mfussenegger/nvim-dap",
-      dependencies = {
-        -- Installs the debug adapters for you
-        'williamboman/mason.nvim',
-        'jay-babu/mason-nvim-dap.nvim',
-      },
-      ft = { "cpp", "c" },
-      config = function()
+  -- 9. nvim-dap
+  {
+    "mfussenegger/nvim-dap",
+    dependencies = {
+      -- Installs the debug adapters for you
+      'williamboman/mason.nvim',
+      'jay-babu/mason-nvim-dap.nvim',
+    },
+    ft = { "cpp", "c" },
+    config = function()
       local dap = require("dap")
       dap.adapters.gdb = {
         type = "executable",
@@ -310,14 +337,14 @@ if not vim.loop.fs_stat(lazypath) then
           type = "gdb",
           request = "launch",
           program = function()
-          local default = vim.fn.expand("%:r")
-          if vim.fn.filereadable(default) == 0 then
-            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+            local default = vim.fn.expand("%:r")
+            if vim.fn.filereadable(default) == 0 then
+              return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
             end
             return default
-            end,
-            cwd = "${workspaceFolder}",
-            stopAtEntry = false,
+          end,
+          cwd = "${workspaceFolder}",
+          stopAtEntry = false,
         },
       }
       dap.configurations.c = dap.configurations.cpp
@@ -327,15 +354,15 @@ if not vim.loop.fs_stat(lazypath) then
       vim.keymap.set("n", "<F11>", function() dap.step_into() end, { silent = true, desc = "Step Into" })
       vim.keymap.set("n", "<F12>", function() dap.step_out() end, { silent = true, desc = "Step Out" })
       vim.keymap.set("n", "<leader>b", function() dap.toggle_breakpoint() end, { silent = true, desc = "Toggle Breakpoint" })
-      end,
-    },
+    end,
+  },
 
-    -- 10. nvim-dap-ui
-    {
-      "rcarriga/nvim-dap-ui",
-      dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
-      ft = { "cpp", "c" },
-      config = function()
+  -- 10. nvim-dap-ui
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+    ft = { "cpp", "c" },
+    config = function()
       local dap = require("dap")
       local dapui = require("dapui")
       dapui.setup({
@@ -355,16 +382,16 @@ if not vim.loop.fs_stat(lazypath) then
       vim.keymap.set("n", "<leader>du", dapui.toggle, { silent = true, desc = "Toggle DAP UI" })
 
       dap.listeners.after.event_initialized["dapui_config"] = function()
-      dapui.open()
+        dapui.open()
       end
       dap.listeners.before.event_terminated["dapui_config"] = function()
-      dapui.close()
+        dapui.close()
       end
       dap.listeners.before.event_exited["dapui_config"] = function()
-      dapui.close()
+        dapui.close()
       end
-      end,
-    },
+    end,
+  },
 
   {
     "lukas-reineke/indent-blankline.nvim",
@@ -405,7 +432,7 @@ if not vim.loop.fs_stat(lazypath) then
       })
     end,
   },
-  
+
   {
     'tummetott/unimpaired.nvim',
     event = 'VeryLazy',
@@ -422,58 +449,58 @@ if not vim.loop.fs_stat(lazypath) then
       }
     end,
   },
-  
+
   {
-  "windwp/nvim-autopairs",
-  event = "InsertEnter",
-  dependencies = { "saghen/blink.cmp" }, -- 确保与 blink.cmp 兼容
-  config = function()
-    local autopairs = require("nvim-autopairs")
-    local Rule = require("nvim-autopairs.rule")
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    dependencies = { "saghen/blink.cmp" }, -- 确保与 blink.cmp 兼容
+    config = function()
+      local autopairs = require("nvim-autopairs")
+      local Rule = require("nvim-autopairs.rule")
 
-    -- 基本设置
-    autopairs.setup {
-      check_ts = true, -- 启用 Treesitter 检查，提升语言感知
-      ts_config = {
-        lua = { "string", "source" }, -- 在 Lua 的字符串和源代码中启用
-        cpp = { "source" }, -- 在 C++ 源代码中启用
-      },
-      disable_filetype = { "TelescopePrompt", "vim" }, -- 在这些文件类型中禁用
-      fast_wrap = {
-        map = "<M-e>", -- Alt+e 触发快速包裹
-        chars = { "{", "[", "(", "\"", "'" }, -- 可包裹的符号
-        pattern = [=[[%'%"%>%]%)%}%,]]=], -- 触发包裹的结束字符
-        end_key = "$",
-        keys = "qwertyuiopzxcvbnmasdfghjkl", -- 选择包裹符号的快捷键
-      },
-    }
-    autopairs.get_rule("{"):with_cr(function()
-      return true -- 按回车时自动换行并缩进
-    end)
-    accept = { auto_brackets = { enabled = true } },
-
-    -- 与 blink.cmp 集成
-    require("blink-cmp").setup({
-    keymap = {
-      ["<CR>"] = {
-        function(cmp) 
-          return cmp.accept({
-            callback = cmp_autopairs.on_confirm_done
-          })
-          end
-        } 
+      -- 基本设置
+      autopairs.setup {
+        check_ts = true, -- 启用 Treesitter 检查，提升语言感知
+        ts_config = {
+          lua = { "string", "source" }, -- 在 Lua 的字符串和源代码中启用
+          cpp = { "source" }, -- 在 C++ 源代码中启用
+        },
+        disable_filetype = { "TelescopePrompt", "vim" }, -- 在这些文件类型中禁用
+        fast_wrap = {
+          map = "<M-e>", -- Alt+e 触发快速包裹
+          chars = { "{", "[", "(", "\"", "'" }, -- 可包裹的符号
+          pattern = [=[[%'%"%>%]%)%}%,]]=], -- 触发包裹的结束字符
+          end_key = "$",
+          keys = "qwertyuiopzxcvbnmasdfghjkl", -- 选择包裹符号的快捷键
+        },
       }
-    })
-  end,
-},
-  }, {
-    performance = {
-      rtp = { reset = true },
-    },
-  })
+      autopairs.get_rule("{"):with_cr(function()
+        return true -- 按回车时自动换行并缩进
+      end)
+      accept = { auto_brackets = { enabled = true } },
 
-  -- 全局设置
-  vim.opt.number = true
-  vim.opt.tabstop = 2
-  vim.opt.shiftwidth = 2
-  vim.opt.expandtab = true
+      -- 与 blink.cmp 集成
+      require("blink-cmp").setup({
+        keymap = {
+          ["<CR>"] = {
+            function(cmp)
+              return cmp.accept({
+                callback = cmp_autopairs.on_confirm_done
+              })
+            end
+          }
+        }
+      })
+    end,
+  },
+}, {
+  performance = {
+    rtp = { reset = true },
+  },
+})
+
+-- 全局设置
+vim.opt.number = true
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
