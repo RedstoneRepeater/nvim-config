@@ -11,6 +11,7 @@ vim.g.mapleader = " "
 vim.g.maplocalleadher = " "
 --相对行号
 vim.o.relativenumber=true
+
 vim.o.scrolloff = 8
 vim.o.sidescrolloff = 8
 
@@ -43,6 +44,9 @@ vim.keymap.set({ "n", "i", "v" }, "<Right>", "<Nop>")
 vim.keymap.set({ "n", "i", "v" }, "<Up>", "<Nop>")
 vim.keymap.set({ "n", "i", "v" }, "<Down>", "<Nop>")
 vim.o.mouse = ""
+
+vim.keymap.set("x", "p", '"_dP')
+vim.keymap.set("x", "<leader>p", 'p')
 -- lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/site/pack/lazy/start/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
