@@ -10,7 +10,7 @@ vim.o.cursorline = true
 vim.g.mapleader = " "
 vim.g.maplocalleadher = " "
 --相对行号
-vim.o.relativenumber=true
+vim.o.relativenumber = true
 
 vim.o.scrolloff = 8
 vim.o.sidescrolloff = 8
@@ -18,8 +18,8 @@ vim.o.sidescrolloff = 8
 -- $跳到行尾不带空格 (交换$ 和 g_)
 vim.keymap.set({ "v", "n" }, "$", "g_")
 vim.keymap.set({ "v", "n" }, "g_", "$")
---vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
---vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 
 vim.keymap.set({'n','t'}, '<A-d>', '<cmd>Lspsaga term_toggle<CR>')
 vim.keymap.set("n", "<leader><CR>", "<CMD>noh<CR>", { desc = "Clear Highlights" })
@@ -70,13 +70,13 @@ require("lazy").setup({
     event = "BufReadPost",
     config = function()
       require("nvim-treesitter.configs").setup({
-        ensure_installed = { "cpp", "c", "lua" },
+        ensure_installed = { "cpp", "c", "lua", "vim", "bash", "java" },
         highlight = { enable = true },
       })
     end,
   },
 
-  -- 2. LSP :nvim-lspconfig + clangd
+  -- 2. LSP :nvim-lspconfig
   {
     "neovim/nvim-lspconfig",
     ft = { "cpp", "c", "lua" },
@@ -104,8 +104,9 @@ require("lazy").setup({
       require("lspsaga").setup()
       vim.api.nvim_set_keymap("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
       vim.api.nvim_set_keymap("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", { noremap = true, silent = true })
-      vim.api.nvim_set_keymap("n", "<leader>lr", "<cmd>lua vim.lsp.buf.references()<CR>", { noremap = true, silent = true })
+      vim.api.nvim_set_keymap("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", { noremap = true, silent = true,nowait = true })
       nmap('K', "<cmd>Lspsaga hover_doc<CR>", 'Hover Documentation')
+      nmap('<leader>go', "<cmd>Lspsaga outline<CR>", '[G]o [O]utline')
       nmap('<leader>pd', "<cmd>Lspsaga peek_definition<CR>", '[P]eek [D]efinition')
       nmap('<leader>rn', "<cmd>Lspsaga rename<cr>", '[R]e[n]ame')
       nmap('<leader>ca', "<cmd>Lspsaga code_action<CR>", '[C]ode [A]ction')
@@ -229,16 +230,33 @@ require("lazy").setup({
   },
 
   -- 6.catppuccin
+  -- {
+  --   "catppuccin/nvim",
+  --   name = "catppuccin",
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     require("catppuccin").setup({
+  --       flavour = "mocha",
+  --     })
+  --     vim.cmd.colorscheme("catppuccin")
+  --   end,
+  -- },
+  -- 6.nightfox
   {
-    "catppuccin/nvim",
-    name = "catppuccin",
+    "EdenEast/nightfox.nvim",
+    name = "nightfox",
     lazy = false,
-    priority = 1000,
-    config = function()
-      require("catppuccin").setup({
-        flavour = "mocha",
+    config = function ()
+      require("nightfox").setup({
+        options = {
+          styles = {
+            comments = "italic",
+            keywords = "bold",
+          }
+        }
       })
-      vim.cmd.colorscheme("catppuccin")
+      vim.cmd("colorscheme nightfox")
     end,
   },
 
@@ -249,7 +267,7 @@ require("lazy").setup({
     config = function()
       vim.g.asyncrun_open = 7 -- 自动打开 Quickfix，高度 7 行
       vim.keymap.set("n", "<leader>rt", ":AsyncRun -mode=term -pos=tab g++ % -o %:r && ./%:r<CR>", { desc = "Compile and Run (Terminal)" })
-      vim.keymap.set("n", "<F7>", ":AsyncRun g++ % -o %:r -g<CR>", { desc = "Compile with Debug" })
+      vim.keymap.set("n", "<F7>", ":w<CR>:AsyncRun g++ % -o %:r -g<CR>", { desc = "Compile with Debug" })
       vim.keymap.set("n", "<leader>cs", ":AsyncStop<CR>", { silent = true, desc = "Stop AsyncRun" })
       vim.keymap.set("n", "<leader>cc", ":AsyncRun g++ % -o %:r && ./%:r<CR>", { silent = true, desc = "Compile and Run C++" })
     end,
@@ -497,6 +515,29 @@ require("lazy").setup({
       })
     end,
   },
+  {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    ---@type Flash.Config
+    opts = {},
+    -- stylua: ignore
+    keys = {
+      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      { "<C-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+    },
+    config = function ()
+      require('flash').setup({
+        modes = {
+          char = {
+            enabled = false,
+          }
+        }
+      })
+    end
+  }
 }, {
   performance = {
     rtp = { reset = true },
