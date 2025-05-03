@@ -551,14 +551,14 @@ require("lazy").setup({
         -- win_height = 12, -- 预览窗口高度
         -- win_vheight = 11, -- 垂直预览高度
         should_preview_cb = function(bufnr)
-					-- file size greater than 100kb can't be previewed automatically
-					local filename = vim.api.nvim_buf_get_name(bufnr)
-					local fsize = vim.fn.getfsize(filename)
-					if fsize > 100 * 1024 then
-						return false
-					end
-					return true
-				end,
+          -- file size greater than 100kb can't be previewed automatically
+          local filename = vim.api.nvim_buf_get_name(bufnr)
+          local fsize = vim.fn.getfsize(filename)
+          if fsize > 100 * 1024 then
+            return false
+          end
+          return true
+        end,
       },
       func_map = {
         open = '<CR>', -- 回车打开条目
