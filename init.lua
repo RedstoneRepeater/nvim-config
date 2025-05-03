@@ -232,351 +232,351 @@ require("lazy").setup({
 
   -- 6.catppuccin
   -- {
-  --   "catppuccin/nvim",
-  --   name = "catppuccin",
-  --   lazy = false,
-  --   priority = 1000,
-  --   config = function()
-  --     require("catppuccin").setup({
-  --       flavour = "mocha",
-  --     })
-  --     vim.cmd.colorscheme("catppuccin")
-  --   end,
-  -- },
-  -- 6.nightfox
-  {
-    "EdenEast/nightfox.nvim",
-    name = "nightfox",
-    lazy = false,
-    config = function ()
-      require("nightfox").setup({
-        options = {
-          styles = {
-            comments = "italic",
-            keywords = "bold",
-          }
-        }
-      })
-      vim.cmd("colorscheme nightfox")
-    end,
-  },
-
-  -- 7. 异步运行：asyncrun.vim
-  {
-    "skywind3000/asyncrun.vim",
-    event = 'VeryLazy',
-    config = function()
-      vim.g.asyncrun_open = 7 -- 自动打开 Quickfix，高度 7 行
-      vim.keymap.set("n", "<leader>rt", ":AsyncRun -mode=term -pos=tab g++ % -o %:r && ./%:r<CR>", { desc = "Compile and Run (Terminal)" })
-      vim.keymap.set("n", "<F7>", ":w<CR>:AsyncRun g++ % -o %:r -g<CR>", { desc = "Compile with Debug" })
-      vim.keymap.set("n", "<leader>cs", ":AsyncStop<CR>", { silent = true, desc = "Stop AsyncRun" })
-      vim.keymap.set("n", "<leader>cc", ":AsyncRun g++ % -o %:r && ./%:r<CR>", { silent = true, desc = "Compile and Run C++" })
-    end,
-  },
-
-  -- 8. 模糊搜索：telescope.nvim
-  {
-    "nvim-telescope/telescope.nvim",
-    branch = "0.1.x",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      {
-        "nvim-telescope/telescope-fzf-native.nvim",
-        build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && "
-        .. "cmake --build build --config Release && "
-        .. "cmake --install build --prefix build",
-      },
-    },
-    keys = {
-      { "<leader>ff", ":Telescope find_files<CR>", desc = "Find Files" },
-      { "<leader>fr", ":Telescope registers<CR>", desc = "Find Registers" },
-      { "<leader>fg", ":Telescope live_grep<CR>", desc = "Live Grep" },
-      { "<leader>fb", ":Telescope buffers<CR>", desc = "Buffers" },
-      { "<leader>fq", ":Telescope quickfix<CR>", desc = "Quickfix" },
-      { "<leader>hq", ":Telescope quickfixhistory<CR>", desc = "Quickfix" },
-      { "<leader>cr", function()
-        require("telescope.builtin").find_files({
-          prompt_title = "Compile and Run C++ File",
-          attach_mappings = function(_, map)
-            map("i", "<CR>", function(prompt_bufnr)
-              local selection = require("telescope.actions.state").get_selected_entry()
-              require("telescope.actions").close(prompt_bufnr)
-              local cmd = string.format("g++ %s -o %s && ./%s",
-              selection.path,
-              vim.fn.fnamemodify(selection.path, ":r"),
-              vim.fn.fnamemodify(selection.path, ":r"))
-              vim.cmd("AsyncRun " .. cmd)
-            end)
-            return true
-          end,
-        })
-      end, desc = "Compile and Run C++" },
-    },
-    config = function()
-      local actions = require "telescope.actions"
-      require("telescope").setup({
-        defaults = {
-          layout_strategy = "vertical",
-          layout_config = { height = 0.9, width = 0.8 },
-          mappings = {
-            i = {
-              ["<C-c>"] = actions.close,
-              ["<C-k>"] = actions.move_selection_previous,
-              ["<C-j>"] = actions.move_selection_next,
-              ["<C-n>"] = actions.cycle_history_next,
-              ["<C-p>"] = actions.cycle_history_prev,
-            }
-          }
-        },
-        extensions = {
-          fzf = {
-            fuzzy = true,
-            override_generic_sorter = true,
-            override_file_sorter = true,
-            case_mode = "smart_case",
-          },
-        },
-      })
-    end,
-  },
-
-  -- 9. nvim-dap
-  {
-    "mfussenegger/nvim-dap",
-    dependencies = {
-      -- Installs the debug adapters for you
-      'williamboman/mason.nvim',
-      'jay-babu/mason-nvim-dap.nvim',
-    },
-    ft = { "cpp", "c" },
-    config = function()
-      local dap = require("dap")
-      dap.adapters.gdb = {
-        type = "executable",
-        command = "codelldb",
-      }
-      dap.configurations.cpp = {
+    --   "catppuccin/nvim",
+    --   name = "catppuccin",
+    --   lazy = false,
+    --   priority = 1000,
+    --   config = function()
+      --     require("catppuccin").setup({
+        --       flavour = "mocha",
+        --     })
+        --     vim.cmd.colorscheme("catppuccin")
+        --   end,
+        -- },
+        -- 6.nightfox
         {
-          name = "Launch",
-          type = "gdb",
-          request = "launch",
-          program = function()
-            local default = vim.fn.expand("%:r")
-            if vim.fn.filereadable(default) == 0 then
-              return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-            end
-            return default
+          "EdenEast/nightfox.nvim",
+          name = "nightfox",
+          lazy = false,
+          config = function ()
+            require("nightfox").setup({
+              options = {
+                styles = {
+                  comments = "italic",
+                  keywords = "bold",
+                }
+              }
+            })
+            vim.cmd("colorscheme nightfox")
           end,
-          cwd = "${workspaceFolder}",
-          stopAtEntry = false,
         },
-      }
-      dap.configurations.c = dap.configurations.cpp
 
-      vim.keymap.set("n", "<F5>", function() dap.continue() end, { silent = true, desc = "Continue" })
-      vim.keymap.set("n", "<F10>", function() dap.step_over() end, { silent = true, desc = "Step Over" })
-      vim.keymap.set("n", "<F11>", function() dap.step_into() end, { silent = true, desc = "Step Into" })
-      vim.keymap.set("n", "<F12>", function() dap.step_out() end, { silent = true, desc = "Step Out" })
-      vim.keymap.set("n", "<leader>b", function() dap.toggle_breakpoint() end, { silent = true, desc = "Toggle Breakpoint" })
-    end,
-  },
+        -- 7. 异步运行：asyncrun.vim
+        {
+          "skywind3000/asyncrun.vim",
+          event = 'VeryLazy',
+          config = function()
+            vim.g.asyncrun_open = 7 -- 自动打开 Quickfix，高度 7 行
+            vim.keymap.set("n", "<leader>rt", ":AsyncRun -mode=term -pos=tab g++ % -o %:r && ./%:r<CR>", { desc = "Compile and Run (Terminal)" })
+            vim.keymap.set("n", "<F7>", ":w<CR>:AsyncRun g++ % -o %:r -g<CR>", { desc = "Compile with Debug" })
+            vim.keymap.set("n", "<leader>cs", ":AsyncStop<CR>", { silent = true, desc = "Stop AsyncRun" })
+            vim.keymap.set("n", "<leader>cc", ":AsyncRun g++ % -o %:r && ./%:r<CR>", { silent = true, desc = "Compile and Run C++" })
+          end,
+        },
 
-  -- 10. nvim-dap-ui
-  {
-    "rcarriga/nvim-dap-ui",
-    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
-    ft = { "cpp", "c" },
-    config = function()
-      local dap = require("dap")
-      local dapui = require("dapui")
-      dapui.setup({
-        layouts = {
-          {
-            elements = { "scopes", "breakpoints", "stacks" },
-            size = 40,
-            position = "left",
+        -- 8. 模糊搜索：telescope.nvim
+        {
+          "nvim-telescope/telescope.nvim",
+          branch = "0.1.x",
+          dependencies = {
+            "nvim-lua/plenary.nvim",
+            {
+              "nvim-telescope/telescope-fzf-native.nvim",
+              build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && "
+              .. "cmake --build build --config Release && "
+              .. "cmake --install build --prefix build",
+            },
           },
-          {
-            elements = { "console" },
-            size = 10,
-            position = "bottom",
-          },
-        },
-      })
-      vim.keymap.set("n", "<leader>du", dapui.toggle, { silent = true, desc = "Toggle DAP UI" })
-
-      dap.listeners.after.event_initialized["dapui_config"] = function()
-        dapui.open()
-      end
-      dap.listeners.before.event_terminated["dapui_config"] = function()
-        dapui.close()
-      end
-      dap.listeners.before.event_exited["dapui_config"] = function()
-        dapui.close()
-      end
-    end,
-  },
-
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    config = function()
-      local hooks = require "ibl.hooks"
-      local highlight = {
-        "RainbowRed",
-        "RainbowYellow",
-        "RainbowBlue",
-        "RainbowOrange",
-        "RainbowGreen",
-        "RainbowViolet",
-        "RainbowCyan",
-      }
-      hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
-        vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
-        vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#E5C07B" })
-        vim.api.nvim_set_hl(0, "RainbowBlue", { fg = "#61AFEF" })
-        vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#D19A66" })
-        vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#98C379" })
-        vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#C678DD" })
-        vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
-      end)
-      require("ibl").setup({
-        indent = {
-          char = "│", -- 缩进线的字符，可以自定义，如 "┆" 或 "▏"
-          tab_char = "│", -- tab 字符的显示
-          highlight = highlight,
-        },
-        scope = {
-          enabled = true, -- 启用作用域显示
-          --show_start = false, -- 不显示作用域开始位置
-          --show_end = false, -- 不显示作用域结束位置
-        },
-        exclude = {
-          filetypes = { "help", "terminal", "dashboard" }, -- 排除某些文件类型
-        },
-      })
-    end,
-  },
-
-  {
-    'tummetott/unimpaired.nvim',
-    event = 'VeryLazy',
-    opts = {
-    },
-    config = function()
-      require('unimpaired').setup {
-        keymaps = {
-          exchange_above = false,
-          exchange_below = false,
-          exchange_section_above = false,
-          exchange_section_below = false,
-        }
-      }
-    end,
-  },
-
-  {
-    "windwp/nvim-autopairs",
-    event = "InsertEnter",
-    dependencies = { "saghen/blink.cmp" }, -- 确保与 blink.cmp 兼容
-    config = function()
-      local autopairs = require("nvim-autopairs")
-      local Rule = require("nvim-autopairs.rule")
-
-      -- 基本设置
-      autopairs.setup {
-        check_ts = true, -- 启用 Treesitter 检查，提升语言感知
-        ts_config = {
-          lua = { "string", "source" }, -- 在 Lua 的字符串和源代码中启用
-          cpp = { "source" }, -- 在 C++ 源代码中启用
-        },
-        disable_filetype = { "TelescopePrompt", "vim" }, -- 在这些文件类型中禁用
-        fast_wrap = {
-          map = "<M-e>", -- Alt+e 触发快速包裹
-          chars = { "{", "[", "(", "\"", "'" }, -- 可包裹的符号
-          pattern = [=[[%'%"%>%]%)%}%,]]=], -- 触发包裹的结束字符
-          end_key = "$",
-          keys = "qwertyuiopzxcvbnmasdfghjkl", -- 选择包裹符号的快捷键
-        },
-      }
-      autopairs.get_rule("{"):with_cr(function()
-        return true -- 按回车时自动换行并缩进
-      end)
-      accept = { auto_brackets = { enabled = true } },
-
-      -- 与 blink.cmp 集成
-      require("blink-cmp").setup({
-        keymap = {
-          ["<CR>"] = {
-            function(cmp)
-              return cmp.accept({
-                callback = cmp_autopairs.on_confirm_done
+          keys = {
+            { "<leader>ff", ":Telescope find_files<CR>", desc = "Find Files" },
+            { "<leader>fr", ":Telescope registers<CR>", desc = "Find Registers" },
+            { "<leader>fg", ":Telescope live_grep<CR>", desc = "Live Grep" },
+            { "<leader>fb", ":Telescope buffers<CR>", desc = "Buffers" },
+            { "<leader>fq", ":Telescope quickfix<CR>", desc = "Quickfix" },
+            { "<leader>hq", ":Telescope quickfixhistory<CR>", desc = "Quickfix" },
+            { "<leader>cr", function()
+              require("telescope.builtin").find_files({
+                prompt_title = "Compile and Run C++ File",
+                attach_mappings = function(_, map)
+                  map("i", "<CR>", function(prompt_bufnr)
+                    local selection = require("telescope.actions.state").get_selected_entry()
+                    require("telescope.actions").close(prompt_bufnr)
+                    local cmd = string.format("g++ %s -o %s && ./%s",
+                    selection.path,
+                    vim.fn.fnamemodify(selection.path, ":r"),
+                    vim.fn.fnamemodify(selection.path, ":r"))
+                    vim.cmd("AsyncRun " .. cmd)
+                  end)
+                  return true
+                end,
               })
-            end
-          }
-        }
-      })
-    end,
-  },
-  {
-    "folke/flash.nvim",
-    event = "VeryLazy",
-    ---@type Flash.Config
-    opts = {},
-    -- stylua: ignore
-    keys = {
-      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-      { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-      { "<C-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
-    },
-    config = function ()
-      require('flash').setup({
-        modes = {
-          char = {
-            enabled = false,
-          }
-        }
-      })
-    end
-  },
-  {
-    'kevinhwang91/nvim-bqf',
-    ft = 'qf', -- 只在 Quickfix 窗口加载
-    opts = {
-      auto_enable = true, -- 自动启用
-      auto_resize_height = true,
-      preview = {
-        auto_preview = true, -- 自动预览
-        -- win_height = 12, -- 预览窗口高度
-        -- win_vheight = 11, -- 垂直预览高度
-        should_preview_cb = function(bufnr)
-          -- file size greater than 100kb can't be previewed automatically
-          local filename = vim.api.nvim_buf_get_name(bufnr)
-          local fsize = vim.fn.getfsize(filename)
-          if fsize > 100 * 1024 then
-            return false
-          end
-          return true
-        end,
-      },
-      func_map = {
-        open = '<CR>', -- 回车打开条目
-        openc = 'o', -- 'o' 打开并关闭 Quickfix
-        tab = 't', -- 在新标签页打开
-        vsplit = '<C-v>', -- 垂直拆分打开
-        split = '<C-x>', -- 水平拆分打开
-      },
-    },
-  },
-}, {
-  performance = {
-    rtp = { reset = true },
-  },
-})
+            end, desc = "Compile and Run C++" },
+          },
+          config = function()
+            local actions = require "telescope.actions"
+            require("telescope").setup({
+              defaults = {
+                layout_strategy = "vertical",
+                layout_config = { height = 0.9, width = 0.8 },
+                mappings = {
+                  i = {
+                    ["<C-c>"] = actions.close,
+                    ["<C-k>"] = actions.move_selection_previous,
+                    ["<C-j>"] = actions.move_selection_next,
+                    ["<C-n>"] = actions.cycle_history_next,
+                    ["<C-p>"] = actions.cycle_history_prev,
+                  }
+                }
+              },
+              extensions = {
+                fzf = {
+                  fuzzy = true,
+                  override_generic_sorter = true,
+                  override_file_sorter = true,
+                  case_mode = "smart_case",
+                },
+              },
+            })
+          end,
+        },
 
--- 全局设置
-vim.opt.number = true
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.expandtab = true
+        -- 9. nvim-dap
+        {
+          "mfussenegger/nvim-dap",
+          dependencies = {
+            -- Installs the debug adapters for you
+            'williamboman/mason.nvim',
+            'jay-babu/mason-nvim-dap.nvim',
+          },
+          ft = { "cpp", "c" },
+          config = function()
+            local dap = require("dap")
+            dap.adapters.gdb = {
+              type = "executable",
+              command = "codelldb",
+            }
+            dap.configurations.cpp = {
+              {
+                name = "Launch",
+                type = "gdb",
+                request = "launch",
+                program = function()
+                  local default = vim.fn.expand("%:r")
+                  if vim.fn.filereadable(default) == 0 then
+                    return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+                  end
+                  return default
+                end,
+                cwd = "${workspaceFolder}",
+                stopAtEntry = false,
+              },
+            }
+            dap.configurations.c = dap.configurations.cpp
+
+            vim.keymap.set("n", "<F5>", function() dap.continue() end, { silent = true, desc = "Continue" })
+            vim.keymap.set("n", "<F10>", function() dap.step_over() end, { silent = true, desc = "Step Over" })
+            vim.keymap.set("n", "<F11>", function() dap.step_into() end, { silent = true, desc = "Step Into" })
+            vim.keymap.set("n", "<F12>", function() dap.step_out() end, { silent = true, desc = "Step Out" })
+            vim.keymap.set("n", "<leader>b", function() dap.toggle_breakpoint() end, { silent = true, desc = "Toggle Breakpoint" })
+          end,
+        },
+
+        -- 10. nvim-dap-ui
+        {
+          "rcarriga/nvim-dap-ui",
+          dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+          ft = { "cpp", "c" },
+          config = function()
+            local dap = require("dap")
+            local dapui = require("dapui")
+            dapui.setup({
+              layouts = {
+                {
+                  elements = { "scopes", "breakpoints", "stacks" },
+                  size = 40,
+                  position = "left",
+                },
+                {
+                  elements = { "console" },
+                  size = 10,
+                  position = "bottom",
+                },
+              },
+            })
+            vim.keymap.set("n", "<leader>du", dapui.toggle, { silent = true, desc = "Toggle DAP UI" })
+
+            dap.listeners.after.event_initialized["dapui_config"] = function()
+              dapui.open()
+            end
+            dap.listeners.before.event_terminated["dapui_config"] = function()
+              dapui.close()
+            end
+            dap.listeners.before.event_exited["dapui_config"] = function()
+              dapui.close()
+            end
+          end,
+        },
+
+        {
+          "lukas-reineke/indent-blankline.nvim",
+          config = function()
+            local hooks = require "ibl.hooks"
+            local highlight = {
+              "RainbowRed",
+              "RainbowYellow",
+              "RainbowBlue",
+              "RainbowOrange",
+              "RainbowGreen",
+              "RainbowViolet",
+              "RainbowCyan",
+            }
+            hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
+              vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
+              vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#E5C07B" })
+              vim.api.nvim_set_hl(0, "RainbowBlue", { fg = "#61AFEF" })
+              vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#D19A66" })
+              vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#98C379" })
+              vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#C678DD" })
+              vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
+            end)
+            require("ibl").setup({
+              indent = {
+                char = "│", -- 缩进线的字符，可以自定义，如 "┆" 或 "▏"
+                tab_char = "│", -- tab 字符的显示
+                highlight = highlight,
+              },
+              scope = {
+                enabled = true, -- 启用作用域显示
+                --show_start = false, -- 不显示作用域开始位置
+                --show_end = false, -- 不显示作用域结束位置
+              },
+              exclude = {
+                filetypes = { "help", "terminal", "dashboard" }, -- 排除某些文件类型
+              },
+            })
+          end,
+        },
+
+        {
+          'tummetott/unimpaired.nvim',
+          event = 'VeryLazy',
+          opts = {
+          },
+          config = function()
+            require('unimpaired').setup {
+              keymaps = {
+                exchange_above = false,
+                exchange_below = false,
+                exchange_section_above = false,
+                exchange_section_below = false,
+              }
+            }
+          end,
+        },
+
+        {
+          "windwp/nvim-autopairs",
+          event = "InsertEnter",
+          dependencies = { "saghen/blink.cmp" }, -- 确保与 blink.cmp 兼容
+          config = function()
+            local autopairs = require("nvim-autopairs")
+            local Rule = require("nvim-autopairs.rule")
+
+            -- 基本设置
+            autopairs.setup {
+              check_ts = true, -- 启用 Treesitter 检查，提升语言感知
+              ts_config = {
+                lua = { "string", "source" }, -- 在 Lua 的字符串和源代码中启用
+                cpp = { "source" }, -- 在 C++ 源代码中启用
+              },
+              disable_filetype = { "TelescopePrompt", "vim" }, -- 在这些文件类型中禁用
+              fast_wrap = {
+                map = "<M-e>", -- Alt+e 触发快速包裹
+                chars = { "{", "[", "(", "\"", "'" }, -- 可包裹的符号
+                pattern = [=[[%'%"%>%]%)%}%,]]=], -- 触发包裹的结束字符
+                end_key = "$",
+                keys = "qwertyuiopzxcvbnmasdfghjkl", -- 选择包裹符号的快捷键
+              },
+            }
+            autopairs.get_rule("{"):with_cr(function()
+              return true -- 按回车时自动换行并缩进
+            end)
+            accept = { auto_brackets = { enabled = true } },
+
+            -- 与 blink.cmp 集成
+            require("blink-cmp").setup({
+              keymap = {
+                ["<CR>"] = {
+                  function(cmp)
+                    return cmp.accept({
+                      callback = cmp_autopairs.on_confirm_done
+                    })
+                  end
+                }
+              }
+            })
+          end,
+        },
+        {
+          "folke/flash.nvim",
+          event = "VeryLazy",
+          ---@type Flash.Config
+          opts = {},
+          -- stylua: ignore
+          keys = {
+            { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+            { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+            { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+            { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+            { "<C-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+          },
+          config = function ()
+            require('flash').setup({
+              modes = {
+                char = {
+                  enabled = false,
+                }
+              }
+            })
+          end
+        },
+        {
+          'kevinhwang91/nvim-bqf',
+          ft = 'qf', -- 只在 Quickfix 窗口加载
+          opts = {
+            auto_enable = true, -- 自动启用
+            auto_resize_height = true,
+            preview = {
+              auto_preview = true, -- 自动预览
+              -- win_height = 12, -- 预览窗口高度
+              -- win_vheight = 11, -- 垂直预览高度
+              should_preview_cb = function(bufnr)
+                -- file size greater than 100kb can't be previewed automatically
+                local filename = vim.api.nvim_buf_get_name(bufnr)
+                local fsize = vim.fn.getfsize(filename)
+                if fsize > 100 * 1024 then
+                  return false
+                end
+                return true
+              end,
+            },
+            func_map = {
+              open = '<CR>', -- 回车打开条目
+              openc = 'o', -- 'o' 打开并关闭 Quickfix
+              tab = 't', -- 在新标签页打开
+              vsplit = '<C-v>', -- 垂直拆分打开
+              split = '<C-x>', -- 水平拆分打开
+            },
+          },
+        },
+      }, {
+        performance = {
+          rtp = { reset = true },
+        },
+      })
+
+      -- 全局设置
+      vim.opt.number = true
+      vim.opt.tabstop = 2
+      vim.opt.shiftwidth = 2
+      vim.opt.expandtab = true
