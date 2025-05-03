@@ -15,7 +15,7 @@ vim.o.relativenumber = true
 vim.o.scrolloff = 8
 vim.o.sidescrolloff = 8
 
--- $跳到行尾不带空格 (交换$ 和 g_)
+-- $跳到行尾不带空格
 vim.keymap.set({ "v", "n" }, "$", "g_")
 vim.keymap.set({ "v", "n" }, "g_", "$")
 vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
@@ -47,6 +47,7 @@ vim.o.mouse = ""
 
 vim.keymap.set("x", "p", '"_dP')
 vim.keymap.set("x", "<leader>p", 'p')
+vim.keymap.set("n", "<leader>cl", '<cmd>cclose<CR>')
 -- lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/site/pack/lazy/start/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -291,7 +292,8 @@ require("lazy").setup({
       { "<leader>fr", ":Telescope registers<CR>", desc = "Find Registers" },
       { "<leader>fg", ":Telescope live_grep<CR>", desc = "Live Grep" },
       { "<leader>fb", ":Telescope buffers<CR>", desc = "Buffers" },
-      { "<leader>fq", ":Telescope quickfixhistory<CR>", desc = "Quickfix" },
+      { "<leader>fq", ":Telescope quickfix<CR>", desc = "Quickfix" },
+      { "<leader>hq", ":Telescope quickfixhistory<CR>", desc = "Quickfix" },
       { "<leader>cr", function()
         require("telescope.builtin").find_files({
           prompt_title = "Compile and Run C++ File",
@@ -537,7 +539,36 @@ require("lazy").setup({
         }
       })
     end
-  }
+  },
+  {
+    'kevinhwang91/nvim-bqf',
+    ft = 'qf', -- 只在 Quickfix 窗口加载
+    opts = {
+      auto_enable = true, -- 自动启用
+      auto_resize_height = true,
+      preview = {
+        auto_preview = true, -- 自动预览
+        -- win_height = 12, -- 预览窗口高度
+        -- win_vheight = 11, -- 垂直预览高度
+        should_preview_cb = function(bufnr)
+					-- file size greater than 100kb can't be previewed automatically
+					local filename = vim.api.nvim_buf_get_name(bufnr)
+					local fsize = vim.fn.getfsize(filename)
+					if fsize > 100 * 1024 then
+						return false
+					end
+					return true
+				end,
+      },
+      func_map = {
+        open = '<CR>', -- 回车打开条目
+        openc = 'o', -- 'o' 打开并关闭 Quickfix
+        tab = 't', -- 在新标签页打开
+        vsplit = '<C-v>', -- 垂直拆分打开
+        split = '<C-x>', -- 水平拆分打开
+      },
+    },
+  },
 }, {
   performance = {
     rtp = { reset = true },
