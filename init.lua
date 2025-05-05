@@ -24,7 +24,7 @@ vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = tr
 vim.keymap.set({'n','t'}, '<A-d>', '<cmd>Lspsaga term_toggle<CR>')
 vim.keymap.set("n", "<leader><CR>", "<CMD>noh<CR>", { desc = "Clear Highlights" })
 vim.keymap.set("i", "<esc>", "<esc><CMD>noh<CR>", { desc = "Clear Highlights" })
-vim.keymap.set('n', '<leader>q', '<cmd>q<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>Q', '<cmd>q<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>w', '<cmd>w<CR>', { noremap = true, silent = true })
 vim.keymap.set("v", "J", ":move '>+1<CR>gv-gv", { desc = "Move Text Down" })
 vim.keymap.set("v", "K", ":move '<-2<CR>gv-gv", { desc = "Move Text Up" })
@@ -48,6 +48,7 @@ vim.o.mouse = ""
 vim.keymap.set("x", "p", '"_dP')
 vim.keymap.set("x", "<leader>p", 'p')
 vim.keymap.set("n", "<leader>cl", '<cmd>cclose<CR>')
+vim.keymap.set("n", "<leader>co", '<cmd>copen<CR>')
 -- lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/site/pack/lazy/start/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -106,6 +107,8 @@ require("lazy").setup({
       vim.api.nvim_set_keymap("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
       vim.api.nvim_set_keymap("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", { noremap = true, silent = true })
       vim.api.nvim_set_keymap("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", { noremap = true, silent = true,nowait = true })
+      vim.keymap.set("n", "<leader>ld", "<cmd>lua vim.diagnostic.setqflist()<CR>", { noremap = true, silent = true })
+      vim.keymap.set("n", "<leader>D", "<cmd>lua vim.diagnostic.setqflist({ severity = vim.diagnostic.severity.ERROR })<CR>", { noremap = true, silent = true })
       nmap('K', "<cmd>Lspsaga hover_doc<CR>", 'Hover Documentation')
       nmap('<leader>go', "<cmd>Lspsaga outline<CR>", '[G]o [O]utline')
       nmap('<leader>pd', "<cmd>Lspsaga peek_definition<CR>", '[P]eek [D]efinition')
@@ -343,22 +346,22 @@ require("lazy").setup({
         -- 9. nvim-dap
         {
           "mfussenegger/nvim-dap",
-          dependencies = {
-            -- Installs the debug adapters for you
-            'williamboman/mason.nvim',
-            'jay-babu/mason-nvim-dap.nvim',
-          },
+          -- dependencies = {
+          --   -- Installs the debug adapters for you
+          --   'williamboman/mason.nvim',
+          --   'jay-babu/mason-nvim-dap.nvim',
+          -- },
           ft = { "cpp", "c" },
           config = function()
             local dap = require("dap")
-            dap.adapters.gdb = {
+            dap.adapters.lldb = {
               type = "executable",
               command = "codelldb",
             }
             dap.configurations.cpp = {
               {
                 name = "Launch",
-                type = "gdb",
+                type = "lldb",
                 request = "launch",
                 program = function()
                   local default = vim.fn.expand("%:r")
@@ -378,6 +381,16 @@ require("lazy").setup({
             vim.keymap.set("n", "<F11>", function() dap.step_into() end, { silent = true, desc = "Step Into" })
             vim.keymap.set("n", "<F12>", function() dap.step_out() end, { silent = true, desc = "Step Out" })
             vim.keymap.set("n", "<leader>b", function() dap.toggle_breakpoint() end, { silent = true, desc = "Toggle Breakpoint" })
+            vim.keymap.set('n', '<leader>dc', function() dap.run_to_cursor() end, { desc = 'DAP: Run to Cursor' })
+            vim.keymap.set('n', '<leader>dq', dap.close, { desc = 'DAP: Close session' })
+            vim.keymap.set('n', '<leader>dt', dap.terminate, { desc = 'Terminate session' })
+            vim.keymap.set('n', '<leader>dr', dap.repl.toggle, { desc = 'DAP: Toggle REPL' })
+            vim.keymap.set('n', '<leader>dw', require('dap.ui.widgets').hover, { desc = 'DAP: Hover' })
+            vim.keymap.set('n', '<leader>df', dap.restart_frame, { desc = 'DAP: Restart' })
+            vim.keymap.set('n', '<leader>db', function()
+              local input = vim.fn.input 'Condition for breakpoint:'
+              dap.set_breakpoint(input)
+            end, { desc = 'DAP: Conditional Breakpoint' })
           end,
         },
 
