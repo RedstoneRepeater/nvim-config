@@ -23,7 +23,6 @@ vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = tr
 
 vim.keymap.set({'n','t'}, '<A-d>', '<cmd>Lspsaga term_toggle<CR>')
 vim.keymap.set("n", "<leader><CR>", "<CMD>noh<CR>", { desc = "Clear Highlights" })
-vim.keymap.set("i", "<esc>", "<esc><CMD>noh<CR>", { desc = "Clear Highlights" })
 vim.keymap.set("v", "J", ":move '>+1<CR>gv-gv", { desc = "Move Text Down" })
 vim.keymap.set("v", "K", ":move '<-2<CR>gv-gv", { desc = "Move Text Up" })
 vim.keymap.set("v", ">", ">gv")
@@ -31,14 +30,14 @@ vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("n", "n", "nzz")
 vim.keymap.set("n", "N", "Nzz")
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { silent = true, desc = "Close Terminal" })
-vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h",{desc = "Move window"})
-vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j",{desc = "Move window"})
-vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k",{desc = "Move window"})
-vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l",{desc = "Move window"})
-vim.keymap.set("n", "<C-h>", "<C-w>h",{desc = "Move window"})
-vim.keymap.set("n", "<C-j>", "<C-w>j",{desc = "Move window"})
-vim.keymap.set("n", "<C-k>", "<C-w>k",{desc = "Move window"})
-vim.keymap.set("n", "<C-l>", "<C-w>l",{desc = "Move window"})
+vim.keymap.set("t", "<M-h>", "<C-\\><C-n><C-w>h",{desc = "Move window"})
+vim.keymap.set("t", "<M-j>", "<C-\\><C-n><C-w>j",{desc = "Move window"})
+vim.keymap.set("t", "<M-k>", "<C-\\><C-n><C-w>k",{desc = "Move window"})
+vim.keymap.set("t", "<M-l>", "<C-\\><C-n><C-w>l",{desc = "Move window"})
+vim.keymap.set("n", "<M-h>", "<C-w>h",{desc = "Move window"})
+vim.keymap.set("n", "<M-j>", "<C-w>j",{desc = "Move window"})
+vim.keymap.set("n", "<M-k>", "<C-w>k",{desc = "Move window"})
+vim.keymap.set("n", "<M-l>", "<C-w>l",{desc = "Move window"})
 --vim.keymap.set({"n","v"},"<C-j>", "5j", { noremap = true, silent = true })
 --vim.keymap.set({"n","v"},"<C-k>", "5k", { noremap = true, silent = true })
 vim.keymap.set({ "n", "i", "v" }, "<Left>", "<Nop>")
@@ -51,26 +50,26 @@ vim.keymap.set("x", "<leader>p", '"_dP')
 vim.keymap.set("n", "<leader>cl", '<cmd>cclose<CR>')
 vim.keymap.set("n", "<leader>co", '<cmd>copen<CR>')
 
-vim.keymap.set("n", "]b", "<cmd>bnext<CR>")
-vim.keymap.set("n", "[b", "<cmd>bprevious<CR>")
-vim.keymap.set("n", "]B", "<cmd>blast<CR>")
-vim.keymap.set("n", "[B", "<cmd>bfirst<CR>")
-vim.keymap.set("n", "]q", "<cmd>cnext<CR>")
-vim.keymap.set("n", "[q", "<cmd>cprevious<CR>")
-vim.keymap.set("n", "]Q", "<cmd>clast<CR>")
-vim.keymap.set("n", "[Q", "<cmd>cfirst<CR>")
-vim.keymap.set("n", "]<C-q>", "<cmd>cnfile<CR>")
-vim.keymap.set("n", "[<C-q>", "<cmd>cpfile<CR>")
-vim.keymap.set("n", "]a", "<cmd>next<CR>")
-vim.keymap.set("n", "[a", "<cmd>previous<CR>")
-vim.keymap.set("n", "]A", "<cmd>last<CR>")
-vim.keymap.set("n", "[A", "<cmd>first<CR>")
-vim.keymap.set("n", "]l", "<cmd>lnext<CR>")
-vim.keymap.set("n", "[l", "<cmd>lprevious<CR>")
-vim.keymap.set("n", "]L", "<cmd>llast<CR>")
-vim.keymap.set("n", "[L", "<cmd>lfirst<CR>")
-vim.keymap.set("n", "]<C-l>", "<cmd>lnfile<CR>")
-vim.keymap.set("n", "[<C-l>", "<cmd>lpfile<CR>")
+vim.keymap.set("n", "]b", "<cmd>bnext<CR>", { silent = true })
+vim.keymap.set("n", "[b", "<cmd>bprevious<CR>", { silent = true })
+vim.keymap.set("n", "]B", "<cmd>blast<CR>", { silent = true })
+vim.keymap.set("n", "[B", "<cmd>bfirst<CR>", { silent = true })
+vim.keymap.set("n", "]q", "<cmd>cnext<CR>", { silent = true })
+vim.keymap.set("n", "[q", "<cmd>cprevious<CR>", { silent = true })
+vim.keymap.set("n", "]Q", "<cmd>clast<CR>", { silent = true })
+vim.keymap.set("n", "[Q", "<cmd>cfirst<CR>", { silent = true })
+vim.keymap.set("n", "]<C-q>", "<cmd>cnfile<CR>", { silent = true })
+vim.keymap.set("n", "[<C-q>", "<cmd>cpfile<CR>", { silent = true })
+vim.keymap.set("n", "]a", "<cmd>next<CR>", { silent = true })
+vim.keymap.set("n", "[a", "<cmd>previous<CR>", { silent = true })
+vim.keymap.set("n", "]A", "<cmd>last<CR>", { silent = true })
+vim.keymap.set("n", "[A", "<cmd>first<CR>", { silent = true })
+vim.keymap.set("n", "]l", "<cmd>lnext<CR>", { silent = true })
+vim.keymap.set("n", "[l", "<cmd>lprevious<CR>", { silent = true })
+vim.keymap.set("n", "]L", "<cmd>llast<CR>", { silent = true })
+vim.keymap.set("n", "[L", "<cmd>lfirst<CR>", { silent = true })
+vim.keymap.set("n", "]<C-l>", "<cmd>lnfile<CR>", { silent = true })
+vim.keymap.set("n", "[<C-l>", "<cmd>lpfile<CR>", { silent = true })
 -- lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/site/pack/lazy/start/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -94,7 +93,7 @@ require("lazy").setup({
     event = "BufReadPost",
     config = function()
       require("nvim-treesitter.configs").setup({
-        ensure_installed = { "cpp", "c", "lua", "vim", "bash", "java", "vimdoc", "json" },
+        ensure_installed = { "cpp", "c", "lua", "vim", "bash", "java", "vimdoc", "json", "make", "cmake" },
         highlight = { enable = true },
       })
     end,
@@ -165,14 +164,14 @@ require("lazy").setup({
       cmdline = {
         completion = {
           menu = {
-            auto_show = true,
+            auto_show = false,
           }
         },
         keymap = {
           preset = "none",
-          ["<Tab>"] = {"accept"},
-          ["<C-k>"] = { "select_prev", "fallback" },
-          ["<C-j>"] = { "select_next", "fallback" },
+          ["<Tab>"] = {"accept", "show"},
+          ["<C-p>"] = { "select_prev", "fallback" },
+          ["<C-n>"] = { "select_next", "fallback" },
         }
       },
       keymap = {
@@ -228,7 +227,7 @@ require("lazy").setup({
         }
       },
     },
-    -- 由于“opts_extend”，您的配置中的其他位置无需重新定义它
+
     opts_extend = { "sources.default" }
   },
 
@@ -259,7 +258,6 @@ require("lazy").setup({
   {
     "EdenEast/nightfox.nvim",
     name = "nightfox",
-    lazy = false,
     config = function ()
       require("nightfox").setup({
         options = {
@@ -506,20 +504,8 @@ require("lazy").setup({
         autopairs.get_rule("{"):with_cr(function()
           return true -- 按回车时自动换行并缩进
         end)
-        accept = { auto_brackets = { enabled = true } },
+        accept = { auto_brackets = { enabled = true } }
 
-        -- 与 blink.cmp 集成
-        require("blink-cmp").setup({
-          keymap = {
-            ["<CR>"] = {
-              function(cmp)
-                return cmp.accept({
-                  callback = cmp_autopairs.on_confirm_done
-                })
-              end
-            }
-          }
-        })
       end,
     },
     {
@@ -534,6 +520,48 @@ require("lazy").setup({
         { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
         { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
         { "<C-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+        { "<C-j>", mode = { "n", "x", "o" }, function ()
+          require("flash").jump({
+            search = { mode = "search", max_length = 0, forward = true, wrap = false, multi_window = false },
+            label = { after = { 0, 0 } },
+            pattern = "^\\s*\\S\\?",
+            jump = { pos = "end" },
+          })
+        end, desc = "Flash Search forward"},
+        { "<C-k>", mode = { "n", "x", "o" }, function ()
+          require("flash").jump({
+            search = { mode = "search", max_length = 0, forward = false, wrap = false, multi_window = false },
+            label = { after = { 0, 0 } },
+            pattern = "^\\s*\\S\\?",
+            jump = { pos = "end" },
+          })
+        end, desc = "Flash Search backward"},
+        {
+          "<leader>j",
+          mode = { "n", "x", "o" },
+          function()
+            require("flash").jump({
+              search = { mode = "search", max_length = 0 },
+              label = { after = { 0, 0 }, matches = false },
+              jump = { pos = "end" },
+              pattern = "^\\s*\\S\\?", -- match non-whitespace at start plus any character (ignores empty lines)
+            })
+          end,
+          desc = "[Flash] Line jump",
+        },
+        {
+          "<leader>k",
+          mode = { "n", "x", "o" },
+          function()
+            require("flash").jump({
+              search = { mode = "search", max_length = 0 },
+              label = { after = { 0, 0 }, matches = false },
+              jump = { pos = "end" },
+              pattern = "^\\s*\\S\\?", -- match non-whitespace at start plus any character (ignores empty lines)
+            })
+          end,
+          desc = "[Flash] Line jump",
+        },
       },
       config = function ()
         require('flash').setup({
@@ -588,3 +616,4 @@ require("lazy").setup({
   vim.opt.tabstop = 2
   vim.opt.shiftwidth = 2
   vim.opt.expandtab = true
+
