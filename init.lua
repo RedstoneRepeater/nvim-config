@@ -1,21 +1,32 @@
 -- ~/.config/nvim/init.lua
 
--- /搜索时忽略大小写
-vim.o.ignorecase = true
--- /搜索时智能大小写
-vim.o.smartcase = true
--- 高亮当前行
-vim.o.cursorline = true
--- 设置 leader 键
-vim.g.mapleader = " "
-vim.g.maplocalleadher = " "
---相对行号
-vim.o.relativenumber = true
+-- local csgroup = vim.api.nvim_create_augroup("ClearSearchHL", { clear = true })
+-- vim.api.nvim_create_autocmd("InsertLeave", {
+  -- pattern = "*",
+  -- group = csgroup,
+  -- callback = function()
+    -- vim.o.hlsearch = false
+  -- end,
+-- })
 
+-- vim.api.nvim_create_autocmd("CmdlineLeave", {
+  -- pattern = "[/\\?]",
+  -- group = csgroup,
+  -- callback = function()
+    -- vim.o.hlsearch = true
+  -- end,
+-- })
+
+vim.o.relativenumber = true
+vim.o.ignorecase = true
+vim.o.smartcase = true
+vim.o.cursorline = true
 vim.o.scrolloff = 8
 vim.o.sidescrolloff = 8
 
--- $跳到行尾不带空格
+vim.g.mapleader = " "
+vim.g.maplocalleadher = " "
+
 vim.keymap.set({ "v", "n" }, "$", "g_")
 vim.keymap.set({ "v", "n" }, "g_", "$")
 vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
@@ -132,8 +143,8 @@ require("lazy").setup({
       vim.api.nvim_set_keymap("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
       vim.api.nvim_set_keymap("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", { noremap = true, silent = true })
       vim.api.nvim_set_keymap("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", { noremap = true, silent = true,nowait = true })
-      vim.keymap.set("n", "<leader>ld", "<cmd>lua vim.diagnostic.setqflist()<CR>", { noremap = true, silent = true })
-      vim.keymap.set("n", "<leader>D", "<cmd>lua vim.diagnostic.setqflist({ severity = vim.diagnostic.severity.ERROR })<CR>", { noremap = true, silent = true })
+      vim.keymap.set("n", "<leader>D", "<cmd>lua vim.diagnostic.setqflist()<CR>", { noremap = true, silent = true })
+      vim.keymap.set("n", "<leader>E", "<cmd>lua vim.diagnostic.setqflist({ severity = vim.diagnostic.severity.ERROR })<CR>", { noremap = true, silent = true })
       nmap('K', "<cmd>Lspsaga hover_doc<CR>", 'Hover Documentation')
       nmap('<leader>go', "<cmd>Lspsaga outline<CR>", '[G]o [O]utline')
       nmap('<leader>pd', "<cmd>Lspsaga peek_definition<CR>", '[P]eek [D]efinition')
@@ -292,9 +303,7 @@ require("lazy").setup({
       "nvim-lua/plenary.nvim",
       {
         "nvim-telescope/telescope-fzf-native.nvim",
-        build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && "
-        .. "cmake --build build --config Release && "
-        .. "cmake --install build --prefix build",
+        build = 'make',
       },
     },
     keys = {
@@ -532,7 +541,7 @@ require("lazy").setup({
           require("flash").jump({
             search = { mode = "search", max_length = 0, forward = false, wrap = false, multi_window = false },
             label = { after = { 0, 0 } },
-            pattern = "^\\s*\\S\\?",
+            pattern = "^\\s*",
             jump = { pos = "end" },
           })
         end, desc = "Flash Search backward"},
@@ -557,7 +566,7 @@ require("lazy").setup({
               search = { mode = "search", max_length = 0 },
               label = { after = { 0, 0 }, matches = false },
               jump = { pos = "end" },
-              pattern = "^\\s*\\S\\?", -- match non-whitespace at start plus any character (ignores empty lines)
+              pattern = "^\\s*", -- match non-whitespace at start plus any character (ignores empty lines)
             })
           end,
           desc = "[Flash] Line jump",
