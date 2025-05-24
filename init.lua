@@ -1,22 +1,5 @@
 -- ~/.config/nvim/init.lua
 
--- local csgroup = vim.api.nvim_create_augroup("ClearSearchHL", { clear = true })
--- vim.api.nvim_create_autocmd("InsertLeave", {
-  -- pattern = "*",
-  -- group = csgroup,
-  -- callback = function()
-    -- vim.o.hlsearch = false
-  -- end,
--- })
-
--- vim.api.nvim_create_autocmd("CmdlineLeave", {
-  -- pattern = "[/\\?]",
-  -- group = csgroup,
-  -- callback = function()
-    -- vim.o.hlsearch = true
-  -- end,
--- })
-
 vim.o.relativenumber = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
@@ -104,7 +87,7 @@ require("lazy").setup({
     event = "BufReadPost",
     config = function()
       require("nvim-treesitter.configs").setup({
-        ensure_installed = { "cpp", "c", "lua", "vim", "bash", "java", "vimdoc", "json", "make", "cmake" },
+        ensure_installed = { "cpp", "c", "lua", "vim", "bash", "java", "vimdoc", "json", "make", "cmake", "python" },
         highlight = { enable = true },
       })
     end,
@@ -204,7 +187,7 @@ require("lazy").setup({
       },
       completion = {
         -- 示例：使用'prefix'对于'foo_|_bar'单词将匹配'foo_'(光标前面的部分),使用'full'将匹配'foo__bar'(整个单词)
-        keyword = { range = 'full' },
+        keyword = { range = 'prefix' },
         -- 选择补全项目时显示文档(0.5秒延迟)
         documentation = { auto_show = true, auto_show_delay_ms = 500 },
         -- 不预选第一个项目，选中后自动插入该项目文本
@@ -234,7 +217,7 @@ require("lazy").setup({
           buffer = { score_offset = 4 },
           path = { score_offset = 3 },
           lsp = { score_offset = 4 },
-          snippets = { score_offset = 1 },
+          snippets = { score_offset = 2 },
         }
       },
     },
@@ -471,7 +454,7 @@ require("lazy").setup({
         require("ibl").setup({
           indent = {
             char = "│", -- 缩进线的字符，可以自定义，如 "┆" 或 "▏"
-            tab_char = "│", -- tab 字符的显示
+            tab_char = "┆", -- tab 字符的显示
             highlight = highlight,
           },
           scope = {
@@ -533,7 +516,7 @@ require("lazy").setup({
           require("flash").jump({
             search = { mode = "search", max_length = 0, forward = true, wrap = false, multi_window = false },
             label = { after = { 0, 0 } },
-            pattern = "^\\s*\\S\\?",
+            pattern = "^\\s*\\S\\?\\zs",
             jump = { pos = "end" },
           })
         end, desc = "Flash Search forward"},
@@ -541,8 +524,8 @@ require("lazy").setup({
           require("flash").jump({
             search = { mode = "search", max_length = 0, forward = false, wrap = false, multi_window = false },
             label = { after = { 0, 0 } },
-            pattern = "^\\s*",
-            jump = { pos = "end" },
+            pattern = "^\\s*\\S\\?\\zs",
+            jump = { pos = "begin" },
           })
         end, desc = "Flash Search backward"},
         {
@@ -553,7 +536,7 @@ require("lazy").setup({
               search = { mode = "search", max_length = 0 },
               label = { after = { 0, 0 }, matches = false },
               jump = { pos = "end" },
-              pattern = "^\\s*\\S\\?", -- match non-whitespace at start plus any character (ignores empty lines)
+              pattern = "^\\s*\\S\\?\\zs", -- match non-whitespace at start plus any character (ignores empty lines)
             })
           end,
           desc = "[Flash] Line jump",
@@ -565,8 +548,8 @@ require("lazy").setup({
             require("flash").jump({
               search = { mode = "search", max_length = 0 },
               label = { after = { 0, 0 }, matches = false },
-              jump = { pos = "end" },
-              pattern = "^\\s*", -- match non-whitespace at start plus any character (ignores empty lines)
+              jump = { pos = "begin" },
+              pattern = "^\\s*\\S\\?\\zs", -- match non-whitespace at start plus any character (ignores empty lines)
             })
           end,
           desc = "[Flash] Line jump",
@@ -626,3 +609,20 @@ require("lazy").setup({
   vim.opt.shiftwidth = 2
   vim.opt.expandtab = true
 
+
+-- local csgroup = vim.api.nvim_create_augroup("ClearSearchHL", { clear = true })
+-- vim.api.nvim_create_autocmd("InsertLeave", {
+  -- pattern = "*",
+  -- group = csgroup,
+  -- callback = function()
+    -- vim.o.hlsearch = false
+  -- end,
+-- })
+
+-- vim.api.nvim_create_autocmd("CmdlineLeave", {
+  -- pattern = "[/\\?]",
+  -- group = csgroup,
+  -- callback = function()
+    -- vim.o.hlsearch = true
+  -- end,
+-- })
