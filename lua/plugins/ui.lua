@@ -17,47 +17,74 @@ return{
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require("lualine").setup({
-        options = { theme = "auto" },
+        extensions = {'nvim-dap-ui'},
+        options = {
+          theme = "auto",
+          disabled_filetypes = {
+            statusline = { "qf" },
+            -- winbar = { "qf" },
+          }
+        },
       })
     end,
   },
 
+  -- {
+  --   "lukas-reineke/indent-blankline.nvim",
+  --   event = { "BufReadPre", "BufNewFile" },
+  --   config = function()
+  --     -- local hooks = require "ibl.hooks"
+  --     -- local highlight = {
+  --     --   "RainbowRed",
+  --     --   "RainbowYellow",
+  --     --   "RainbowBlue",
+  --     --   "RainbowOrange",
+  --     --   "RainbowGreen",
+  --     --   "RainbowViolet",
+  --     --   "RainbowCyan",
+  --     -- }
+  --     -- hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
+  --       vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
+  --       vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#E5C07B" })
+  --       vim.api.nvim_set_hl(0, "RainbowBlue", { fg = "#61AFEF" })
+  --       vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#D19A66" })
+  --       vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#98C379" })
+  --       vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#C678DD" })
+  --       vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
+  --     -- end)
+  --     require("ibl").setup({
+  --       indent = {
+  --         char = "│", -- 缩进线的字符，可以自定义，如 "┆" 或 "▏"
+  --         tab_char = "┆", -- tab 字符的显示
+  --         highlight = "Comment",
+  --         -- highlight = highlight,
+  --       },
+  --       scope = {
+  --         highlight = "RainbowGreen",
+  --         enabled = true, -- 启用作用域显示
+  --         --show_start = false, -- 不显示作用域开始位置
+  --         --show_end = false, -- 不显示作用域结束位置
+  --       },
+  --       exclude = {
+  --         filetypes = { "help", "terminal", "dashboard", "qf" }, -- 排除某些文件类型
+  --       },
+  --     })
+  --   end,
+  -- },
+
   {
-    "lukas-reineke/indent-blankline.nvim",
+    "saghen/blink.indent",
     event = { "BufReadPre", "BufNewFile" },
-    config = function()
-      local hooks = require "ibl.hooks"
-      local highlight = {
-        "RainbowRed",
-        "RainbowYellow",
-        "RainbowBlue",
-        "RainbowOrange",
-        "RainbowGreen",
-        "RainbowViolet",
-        "RainbowCyan",
-      }
-      hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
-        vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
-        vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#E5C07B" })
-        vim.api.nvim_set_hl(0, "RainbowBlue", { fg = "#61AFEF" })
-        vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#D19A66" })
-        vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#98C379" })
-        vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#C678DD" })
-        vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
-      end)
-      require("ibl").setup({
-        indent = {
-          char = "│", -- 缩进线的字符，可以自定义，如 "┆" 或 "▏"
-          tab_char = "┆", -- tab 字符的显示
-          highlight = highlight,
-        },
+    config = function ()
+      require("blink.indent").setup({
         scope = {
-          enabled = true, -- 启用作用域显示
-          --show_start = false, -- 不显示作用域开始位置
-          --show_end = false, -- 不显示作用域结束位置
-        },
-        exclude = {
-          filetypes = { "help", "terminal", "dashboard", "qf" }, -- 排除某些文件类型
+          char = "▏",
+          -- ▏▎▍
+          highlights = { 'Comment' },
+          underline = {
+            enabled = true,
+            highlights = { 'BlinkIndentCyanUnderline' },
+          },
         },
       })
     end,
