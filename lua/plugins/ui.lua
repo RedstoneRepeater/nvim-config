@@ -16,7 +16,23 @@ return{
     event = "VeryLazy",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
+      local dmode_enabled = false
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "DebugModeChanged",
+        callback = function(args)
+          dmode_enabled = args.data.enabled
+        end
+      })
       require("lualine").setup({
+        sections = {
+          lualine_a = {
+            {
+              "mode",
+              fmt = function(str) return dmode_enabled and "DEBUG" or str end,
+              color = function(tb) return dmode_enabled and "dCursor" or tb end,
+            },
+          },
+        },
         extensions = {'nvim-dap-ui'},
         options = {
           theme = "auto",
