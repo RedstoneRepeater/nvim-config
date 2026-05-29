@@ -5,27 +5,12 @@ return{
     dependencies = { "nvimdev/lspsaga.nvim" },
     config = function()
       vim.lsp.config("clangd", {
-        capabilities = {
-          textDocument = {
-            completion = {
-              editsNearCursor = true,
-            },
-          },
-          offsetEncoding = { 'utf-8', 'utf-16' },
-        },
         cmd = { "clangd", "--background-index", "--clang-tidy" },
-        filetypes = { "c", "cpp", "objc", "objcpp" },
-        root_markers = {"compile_commands.json", ".clangd", ".git"},
-      })
-      vim.lsp.config("bashls", {
-        filetypes = { "bash", "sh" },
-      })
-      vim.lsp.config("lua_ls", {
-        filetypes = { "lua" },
       })
       vim.lsp.enable("clangd")
       vim.lsp.enable("bashls")
       vim.lsp.enable("lua_ls")
+      vim.lsp.enable("tinymist")
       vim.diagnostic.config{
         virtual_text = true,
       }

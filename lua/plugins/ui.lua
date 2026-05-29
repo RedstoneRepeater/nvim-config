@@ -33,7 +33,6 @@ return{
             },
           },
         },
-        extensions = {'nvim-dap-ui'},
         options = {
           theme = "auto",
           disabled_filetypes = {

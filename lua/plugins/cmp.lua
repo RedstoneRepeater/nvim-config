@@ -2,9 +2,14 @@ return{
   {
     'saghen/blink.cmp',
     event = {"InsertEnter", "CmdlineEnter"},
-    dependencies = 'rafamadriz/friendly-snippets',
+    dependencies = { 'rafamadriz/friendly-snippets', 'saghen/blink.lib' },
     -- version = '*',
-    build = "cargo build --release",
+    -- build = "cargo build --release",
+    build = function()
+      -- build the fuzzy matcher, wait up to 60 seconds
+      -- you can use `gb` in `:Lazy` to rebuild the plugin as needed
+      require('blink.cmp').build():wait(60000)
+    end,
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
     opts = {
@@ -16,7 +21,7 @@ return{
         },
         keymap = {
           preset = "none",
-          ["<Tab>"] = {"accept", "show"},
+          ["<Tab>"] = { "accept", "show" },
           ["<C-p>"] = { "select_prev", "fallback" },
           ["<C-n>"] = { "select_next", "fallback" },
           ['<C-e>'] = { 'cancel', 'fallback' },
@@ -81,6 +86,8 @@ return{
           snippets = { score_offset = 3 },
         }
       },
+
+      fuzzy = { implementation = "rust" }
     },
 
     opts_extend = { "sources.default" }
@@ -89,7 +96,7 @@ return{
   {
     "windwp/nvim-autopairs",
     event = "InsertEnter",
-    dependencies = { "saghen/blink.cmp" }, -- 确保与 blink.cmp 兼容
+    -- dependencies = { "saghen/blink.cmp" }, -- 确保与 blink.cmp 兼容
     config = function()
       local autopairs = require("nvim-autopairs")
       local Rule = require("nvim-autopairs.rule")
