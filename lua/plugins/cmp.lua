@@ -8,7 +8,7 @@ return{
     build = function()
       -- build the fuzzy matcher, wait up to 60 seconds
       -- you can use `gb` in `:Lazy` to rebuild the plugin as needed
-      require('blink.cmp').build():wait(60000)
+      require('blink.cmp').build():pwait()
     end,
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
@@ -29,6 +29,7 @@ return{
       },
       keymap = {
         preset = 'none',
+
         ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
         ['<C-e>'] = { 'cancel', 'fallback' },
         ['<CR>'] = { 'accept', 'fallback' },
